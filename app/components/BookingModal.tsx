@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 interface BookingModalProps {
     isOpen: boolean;
     onClose: () => void;
+    preSelectedTherapist?: string;
 }
 
 interface BookingFormData {
