@@ -1,0 +1,335 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+/* Section Backgrounds - Talkspace Style */
+.section-mint {
+    background-color: #E8F5F1;
+}
+
+.section-yellow {
+    background-color: #FFF9E6;
+}
+
+.section-pink {
+    background-color: #FFF0F3;
+}
+
+.section-purple {
+    background-color: #F5F3FF;
+}
+
+.section-white {
+    background-color: #ffffff;
+}
+
+/* Glassmorphism */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Text Gradient */
+.text-gradient {
+    background: linear-gradient(90deg, #FFB7B2, #C7CEEA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Floating Animation */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Rotating Border */
+@keyframes rotateBorder {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.rotating-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(45deg, #FFB7B2, #C7CEEA, #FFB7B2);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotateBorder 3s linear infinite;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Scroll Animations */
+.scroll-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.scroll-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Glow Effect */
+.glow {
+    box-shadow: 0 0 20px rgba(255, 183, 178, 0.5);
+}
+
+.glow-purple {
+    box-shadow: 0 0 20px rgba(199, 206, 234, 0.5);
+}
+
+/* Particle Container */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: float-up 15s infinite ease-in-out;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #FFB7B2, #C7CEEA);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #C7CEEA, #FFB7B2);
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Slide In Animations */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.8s ease-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+}
+
+/* Line Clamp Utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Logo Styling */
+nav img[alt="HerMindmate"] {
+    height: 2.5rem !important;
+    width: auto;
+    object-fit: contain;
+    max-width: 200px;
+}
+
+.hero-logo {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: inline-block;
+}
+
+.hero-logo img {
+    height: 3rem;
+    width: auto;
+    object-fit: contain;
+    max-width: 300px;
+}
+
+@media (min-width: 768px) {
+    .hero-logo img {
+        height: 4rem;
+    }
+}
+
+/* Split Layout Utilities */
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .split-layout {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+    }
+
+    .split-layout.reverse {
+        direction: rtl;
+    }
+
+    .split-layout.reverse>* {
+        direction: ltr;
+    }
+}
+
+/* Large Numbered Steps */
+.step-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #FFB7B2;
+    opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+    .step-number {
+        font-size: 8rem;
+    }
+}
+
+/* Container Spacing */
+.container-spacing {
+    padding: 5rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .container-spacing {
+        padding: 7rem 1.5rem;
+    }
+}
+
+/* Rounded Image */
+.rounded-image {
+    border-radius: 2rem;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
