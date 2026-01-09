@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock, User, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -22,19 +22,19 @@ interface BookingFormData {
     notes: string;
 }
 
+interface Doctor {
+    id: string;
+    name: string;
+    role: string;
+    status: string;
+}
+
 const services = [
     { id: 'clinical', name: 'Clinical Psychology', duration: '50 min' },
     { id: 'adolescent', name: 'Adolescent Care', duration: '45 min' },
     { id: 'pregnancy', name: 'Pregnancy Support', duration: '60 min' },
     { id: 'queer', name: 'Queer Affirmative', duration: '50 min' },
     { id: 'sexual', name: 'Sexual Health', duration: '45 min' },
-];
-
-const therapists = [
-    { id: '1', name: 'Dr. Priya Sharma', specialty: 'Clinical Psychology', available: true },
-    { id: '2', name: 'Dr. Anjali Mehta', specialty: 'Adolescent Care', available: true },
-    { id: '3', name: 'Dr. Kavita Reddy', specialty: 'Pregnancy Support', available: true },
-    { id: '4', name: 'Dr. Sneha Iyer', specialty: 'Queer Affirmative', available: false },
 ];
 
 const timeSlots = [
@@ -44,6 +44,8 @@ const timeSlots = [
 export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     const [step, setStep] = useState(1);
     const [bookingSuccess, setBookingSuccess] = useState(false);
+    const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const [loadingDoctors, setLoadingDoctors] = useState(true);
     const { register, handleSubmit, watch, formState: { errors } } = useForm<BookingFormData>();
 
     const selectedService = watch('service');
@@ -51,14 +53,53 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     const selectedDate = watch('date');
     const selectedTime = watch('time');
 
+    useEffect(() => {
+        if (isOpen) {
+            fetchDoctors();
+        }
+    }, [isOpen]);
+
+    const fetchDoctors = async () => {
+        try {
+            const response = await fetch('/api/doctors');
+            const data = await response.json();
+            if (data.doctors) {
+                setDoctors(data.doctors.filter((d: Doctor) => d.status === 'Active'));
+            }
+        } catch (error) {
+            console.error('Error fetching doctors:', error);
+        } finally {
+            setLoadingDoctors(false);
+        }
+    };
+
     const onSubmit = async (data: BookingFormData) => {
         try {
+            // Find the selected doctor to get their name and ID
+            const selectedDoctor = doctors.find(d => d.id === data.therapist);
+            if (!selectedDoctor) {
+                alert('Please select a therapist');
+                return;
+            }
+
+            const bookingData = {
+                service: data.service,
+                therapist: selectedDoctor.name,
+                doctorId: selectedDoctor.id,
+                date: data.date,
+                time: data.time,
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                notes: data.notes || '',
+            };
+
             const response = await fetch('/api/bookings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(bookingData),
             });
 
             if (!response.ok) {
@@ -185,39 +226,39 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                                         exit={{ opacity: 0, x: -20 }}
                                     >
                                         <h3 className="text-xl font-bold mb-4">Choose Your Therapist</h3>
-                                        <div className="space-y-3">
-                                            {therapists.map((therapist) => (
-                                                <label
-                                                    key={therapist.id}
-                                                    className={`block p-4 border-2 rounded-xl cursor-pointer transition ${!therapist.available
-                                                        ? 'opacity-50 cursor-not-allowed'
-                                                        : selectedTherapist === therapist.id
+                                        {loadingDoctors ? (
+                                            <div className="text-center py-8 text-gray-500">Loading therapists...</div>
+                                        ) : doctors.length === 0 ? (
+                                            <div className="text-center py-8 text-gray-500">No therapists available</div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {doctors.map((doctor) => (
+                                                    <label
+                                                        key={doctor.id}
+                                                        className={`block p-4 border-2 rounded-xl cursor-pointer transition ${selectedTherapist === doctor.id
                                                             ? 'border-pink-400 bg-pink-50'
                                                             : 'border-gray-200 hover:border-pink-200'
-                                                        }`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        value={therapist.id}
-                                                        {...register('therapist', { required: true })}
-                                                        disabled={!therapist.available}
-                                                        className="sr-only"
-                                                    />
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 flex items-center justify-center text-white font-bold">
-                                                            {therapist.name.charAt(0)}
+                                                            }`}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            value={doctor.id}
+                                                            {...register('therapist', { required: true })}
+                                                            className="sr-only"
+                                                        />
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 flex items-center justify-center text-white font-bold">
+                                                                {doctor.name.charAt(0)}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <p className="font-semibold text-gray-800">{doctor.name}</p>
+                                                                <p className="text-sm text-gray-500">{doctor.role}</p>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex-1">
-                                                            <p className="font-semibold text-gray-800">{therapist.name}</p>
-                                                            <p className="text-sm text-gray-500">{therapist.specialty}</p>
-                                                        </div>
-                                                        {!therapist.available && (
-                                                            <span className="text-xs text-red-500 font-medium">Unavailable</span>
-                                                        )}
-                                                    </div>
-                                                </label>
-                                            ))}
-                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
                                     </motion.div>
                                 )}
 

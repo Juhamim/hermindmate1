@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log('🌱 Seeding database with initial data...');
 
-    // Clear existing data
+    // Clear existing data (in order due to foreign keys)
+    await prisma.sessionNote.deleteMany();
+    await prisma.session.deleteMany();
+    await prisma.booking.deleteMany();
     await prisma.article.deleteMany();
     await prisma.service.deleteMany();
+    await prisma.user.deleteMany();
     await prisma.doctor.deleteMany();
 
     // Seed Doctors (Your Real Team)
@@ -65,6 +70,78 @@ async function main() {
     ]);
 
     console.log(`✅ Created ${services.length} services`);
+
+    // Create admin user
+    const adminPassword = await bcrypt.hash('admin123', 10);
+    const admin = await prisma.user.create({
+        data: {
+            email: 'admin@hermindmate.com',
+            password: adminPassword,
+            role: 'admin',
+            name: 'Admin User',
+        },
+    });
+    console.log(`✅ Created admin user: ${admin.email}`);
+
+    // Create psychologist user linked to Dr. Priya Kumar
+    const psychologistPassword = await bcrypt.hash('doctor123', 10);
+    const psychologist = await prisma.user.create({
+        data: {
+            email: 'doctor@hermindmate.com',
+            password: psychologistPassword,
+            role: 'psychologist',
+            name: 'Dr. Priya Kumar',
+            doctorId: doctors[1].id, // Link to Dr. Priya Kumar
+        },
+    });
+    console.log(`✅ Created psychologist user: ${psychologist.email}`);
+
+    // Create sample bookings for the psychologist
+    const bookings = await Promise.all([
+        prisma.booking.create({
+            data: {
+                service: 'Individual Therapy',
+                therapist: doctors[1].name,
+                doctorId: doctors[1].id,
+                date: '2026-01-15',
+                time: '10:00 AM',
+                name: 'Ananya Sharma',
+                email: 'ananya@example.com',
+                phone: '+91 98765 43210',
+                notes: 'First session, anxiety issues',
+                status: 'confirmed',
+            },
+        }),
+        prisma.booking.create({
+            data: {
+                service: 'Couple Counseling',
+                therapist: doctors[1].name,
+                doctorId: doctors[1].id,
+                date: '2026-01-16',
+                time: '2:00 PM',
+                name: 'Ravi and Meera Patel',
+                email: 'ravi.patel@example.com',
+                phone: '+91 98765 43211',
+                notes: 'Marriage counseling',
+                status: 'confirmed',
+            },
+        }),
+        prisma.booking.create({
+            data: {
+                service: 'Individual Therapy',
+                therapist: doctors[1].name,
+                doctorId: doctors[1].id,
+                date: '2026-01-10',
+                time: '11:00 AM',
+                name: 'Priya Reddy',
+                email: 'priya.reddy@example.com',
+                phone: '+91 98765 43212',
+                notes: 'Follow-up session',
+                status: 'completed',
+            },
+        }),
+    ]);
+    console.log(`✅ Created ${bookings.length} sample bookings`);
 
     console.log('✨ Database seeded successfully!');
 }

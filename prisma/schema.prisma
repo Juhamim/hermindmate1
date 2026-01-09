@@ -6,23 +6,59 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   // "admin" or "psychologist"
+  name      String
+  doctorId  String?  @unique
+  doctor    Doctor?  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  sessions  Session[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model Booking {
-  id          String   @id @default(cuid())
-  service     String
-  therapist   String
-  date        String
-  time        String
-  name        String
-  email       String
-  phone       String
-  notes       String?
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String        @id @default(cuid())
+  service      String
+  therapist    String
+  doctorId     String?
+  doctor       Doctor?       @relation(fields: [doctorId], references: [id])
+  date         String
+  time         String
+  name         String
+  email        String
+  phone        String
+  notes        String?
+  status       String        @default("pending")
+  sessionNotes SessionNote[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model SessionNote {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+  notes     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Contact {
@@ -38,15 +74,18 @@ model Contact {
 }
 
 model Doctor {
-  id        String   @id @default(cuid())
-  name      String
-  role      String
-  bio       String
-  fee       Int
-  photo     String
-  status    String   @default("Active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  role         String
+  bio          String
+  fee          Int
+  photo        String
+  status       String        @default("Active")
+  user         User?
+  bookings     Booking[]
+  sessionNotes SessionNote[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Service {

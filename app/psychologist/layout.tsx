@@ -4,22 +4,27 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-    LayoutDashboard, Users, Briefcase, FileText,
-    Shield, Settings, Menu, X, LogOut
+    LayoutDashboard, Calendar, Users, Clock,
+    DollarSign, User, Menu, X, LogOut
 } from 'lucide-react';
 
 const navItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Specialists', href: '/admin/doctors', icon: Users },
-    { name: 'Services', href: '/admin/services', icon: Briefcase },
-    { name: 'CMS', href: '/admin/cms', icon: FileText },
-    { name: 'Moderation', href: '/admin/moderation', icon: Shield },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Dashboard', href: '/psychologist', icon: LayoutDashboard },
+    { name: 'Appointments', href: '/psychologist/appointments', icon: Calendar },
+    { name: 'Patients', href: '/psychologist/patients', icon: Users },
+    { name: 'Schedule', href: '/psychologist/schedule', icon: Clock },
+    { name: 'Earnings', href: '/psychologist/earnings', icon: DollarSign },
+    { name: 'Profile', href: '/psychologist/profile', icon: User },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function PsychologistLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
+
+    const handleLogout = async () => {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/login';
+    };
 
     return (
         <div className="flex h-screen bg-gray-50">
@@ -43,12 +48,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <div className="p-6 border-b border-gray-200">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-400 rounded-xl flex items-center justify-center">
+                                <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl flex items-center justify-center">
                                     <span className="text-white font-bold text-lg">H</span>
                                 </div>
                                 <div>
                                     <h1 className="font-bold text-gray-900">HerMindmate</h1>
-                                    <p className="text-xs text-gray-500">Admin Panel</p>
+                                    <p className="text-xs text-gray-500">Psychologist Portal</p>
                                 </div>
                             </div>
                             <button
@@ -74,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                     className={`
                     flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition
                     ${isActive
-                                            ? 'bg-gradient-to-r from-pink-50 to-purple-50 text-pink-600'
+                                            ? 'bg-gradient-to-r from-purple-50 to-pink-50 text-purple-600'
                                             : 'text-gray-600 hover:bg-gray-50'
                                         }
                   `}
@@ -89,19 +94,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     {/* User Profile */}
                     <div className="p-4 border-t border-gray-200">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                                <span className="text-gray-600 font-bold">A</span>
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold">P</span>
                             </div>
                             <div className="flex-1">
-                                <p className="font-medium text-gray-900 text-sm">Admin User</p>
-                                <p className="text-xs text-gray-500">admin@hermindmate.com</p>
+                                <p className="font-medium text-gray-900 text-sm">Dr. Priya Kumar</p>
+                                <p className="text-xs text-gray-500">Psychologist</p>
                             </div>
                         </div>
                         <button
-                            onClick={async () => {
-                                await fetch('/api/auth/logout', { method: 'POST' });
-                                window.location.href = '/login';
-                            }}
+                            onClick={handleLogout}
                             className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition"
                         >
                             <LogOut size={16} />
@@ -123,7 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </button>
                     <div className="flex-1">
                         <h2 className="text-xl font-bold text-gray-900">
-                            {navItems.find(item => item.href === pathname)?.name || 'Admin'}
+                            {navItems.find(item => item.href === pathname)?.name || 'Psychologist'}
                         </h2>
                     </div>
                 </header>

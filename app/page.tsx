@@ -96,7 +96,10 @@ const Navbar = ({ onBookingClick }: { onBookingClick: () => void }) => {
                     <a href="/team" className="hover:text-pink-500 transition">Meet Our Team</a>
                     <a href="#faq" className="hover:text-pink-500 transition">FAQ</a>
                     <a href="#contact" className="hover:text-pink-500 transition">Contact</a>
-                    <a href="/admin" className="hover:text-pink-500 transition font-bold">Admin</a>
+                    <div className="flex gap-4 pl-4 border-l border-gray-300">
+                        <a href="/admin" className="hover:text-pink-500 transition font-bold">Admin</a>
+                        <a href="/login" className="hover:text-purple-500 transition font-bold">Psychologist</a>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -132,6 +135,10 @@ const Navbar = ({ onBookingClick }: { onBookingClick: () => void }) => {
                             <a href="/team" onClick={() => setMobileMenuOpen(false)} className="text-gray-700 font-medium hover:text-pink-500 transition py-2">Meet Our Team</a>
                             <a href="#faq" onClick={() => setMobileMenuOpen(false)} className="text-gray-700 font-medium hover:text-pink-500 transition py-2">FAQ</a>
                             <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="text-gray-700 font-medium hover:text-pink-500 transition py-2">Contact</a>
+                            <div className="border-t border-gray-300 pt-4 mt-2 flex flex-col gap-3">
+                                <a href="/admin" onClick={() => setMobileMenuOpen(false)} className="text-gray-900 font-bold hover:text-pink-500 transition py-2">Admin Portal</a>
+                                <a href="/login" onClick={() => setMobileMenuOpen(false)} className="text-gray-900 font-bold hover:text-purple-500 transition py-2">Psychologist Portal</a>
+                            </div>
                         </div>
                     </motion.div>
                 )}
